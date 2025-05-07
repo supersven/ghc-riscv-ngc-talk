@@ -1,0 +1,15 @@
+GHC's RISC-V Native Code Generation Backend
+===========================================
+
+This talk consists of three parts.
+
+First, I will explain what's so exciting about RISC-V and why it's not just
+"yet another architecture".
+
+Second, we will take a look at the current state of RISC-V support in GHC with
+a focus on the Native Code Generation Backend ("NCG.) Furthermore, future
+improvements will be discussed (finally, we're at the dawn of Zurihac 2025 ;)
+.)
+
+Last (but not least), I'd like to share a couple of tricks and hints to future
+NCG developers.
