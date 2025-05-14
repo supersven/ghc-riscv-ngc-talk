@@ -76,6 +76,111 @@ author: Sven Tennie
 
 # Vector Register Configuration
 
+- Problem: Applications need very different vector sizes
+
+  - Embedded chips should save silicon
+  - HPC may need big vectors
+  - usually a tradeoff
+  - usually max vector sizes are bound to ISA features
+  - Standard allows 32 to 65,536 bits per vector register (TODO: Check this!)
+
+- RISC-V approach:
+
+  1. Make effective register width configurable -> grouping
+  1. Tell when a calculation doesn't fit -> strip mining
+
+- Benefits:
+  - Application can dynamically react on the vector register width (VLEN)
+  - HPC software can run on embedded CPUs and vice versa without recompilation
+
+# Vector configuration
+
+- Task: Increment each element of a _8bit x 8_ vector by one (128bit register width)
+
+```c
+#include <stdlib.h>
+#include <riscv_vector.h>
+
+uint8_t* plus_one(uint8_t b[8]) {
+    for(int i = 0; i < 8; i++) {
+        b[i]++;
+    }
+    return b;
+}
+```
+
+=>
+
+```asm
+plus_one:
+        vsetivli        zero, 8, e8, mf2, ta, ma
+        vle8.v  v8, (a0)
+        vadd.vi v8, v8, 1
+        vse8.v  v8, (a0)
+        ret
+```
+
+<!-- https://godbolt.org/z/dGfxY7dv3 -->
+
+# Vector configuration (2)
+
+- Task: Increment each element of a _8bit x 16_ vector by one (128bit register width)
+
+```c
+uint8_t* plus_one(uint8_t b[16]) {
+    for(int i = 0; i < 16; i++) {
+        b[i]++;
+    }
+    return b;
+}
+```
+
+=>
+
+```asm
+plus_one:
+        vl1r.v  v8, (a0)
+        vsetivli        zero, 16, e8, m1, ta, ma
+        vadd.vi v8, v8, 1
+        vs1r.v  v8, (a0)
+        ret
+```
+
+<!-- https://godbolt.org/z/jWGvWsbE4 -->
+
+# Vector configuration (3)
+
+- Task: Increment each element of a _8bit x 32_ vector by one (128bit register width)
+
+```c
+uint8_t* plus_one(uint8_t b[32]) {
+    for(int i = 0; i < 32; i++) {
+        b[i]++;
+    }
+    return b;
+}
+```
+
+=>
+
+```asm
+plus_one:
+        vl2r.v  v8, (a0)
+        vsetvli a1, zero, e8, m2, ta, ma
+        vadd.vi v8, v8, 1
+        vs2r.v  v8, (a0)
+        ret
+```
+
+<!-- https://godbolt.org/z/bjr57ohsr -->
+
+<!-- https://llvm.org/devmtg/2023-10/slides/techtalks/Lau-VectorCodegenInTheRISC-VBackend.pdf -->
+
+# Vectors: Questions to investigate
+
+- How can we allocate register groups? (Virtual registers that cover multiple consecutive registers)
+- How to optimize for minimal vector re-configuration?
+
 # NCG development: Tipps & Tricks
 
 ## Compiler Explorer (Godbolt)
@@ -109,6 +214,12 @@ author: Sven Tennie
   - Reading a lot of Assembly or Cmm can be very exhausting
 - Run testsuite subsets
 - Write small Cmm reproducers by hand
+
+## Your are not alone!
+
+- Matrix group
+- Mailing list
+- Discourse
 
 ## Hunting Heisenbugs
 
