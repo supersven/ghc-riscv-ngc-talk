@@ -10,6 +10,8 @@ author: Sven Tennie
   - RV32I Base Integer Instruction Set -> ~40 instructions
   - Basic interpreter can be built in an afternoon
 - Augmented by many extensions (sub-standards)
+- Custom extensions are aticipated by the ISA
+  - Ideal research vehicle for computer architectures
 - ISA like playing with Lego bricks
 - ISA is open source, implementations (SOCs) not necessarily
   - License: _Creative Commons Attribution 4.0 International_
@@ -27,9 +29,15 @@ author: Sven Tennie
 - Vibrant community
 - Lack of powerful hardware
   - No good cloud options -> No native cloud CI
+  - Cores comparable to ARM A55 (2017)
+    - Your smartphone might be more powerful than RISC-V SBCs
 - Lot's of movement though
   - New boards and chips appear frequently
   - Many manufacturers
+  - Research all over the world
+    - E.g. EU grant for RISC-V HPC research
+      - DARE (Digital Autonomy with RISC-V in Europe)
+      - Funding: 240 Million Euros
 - There are still some dragons ...
   - Tools don't support the full instruction set
   - Tools sometimes still have bugs ...
@@ -51,12 +59,13 @@ author: Sven Tennie
 
 # GHC RISC-V History
 
-- LLVM backend by Andreas Schwab
+- LLVM backend by Andreas Schwab (October 2020; GHC 9.2)
 - Moritz Angerman and Sven Tennie accidentally started NCG at the same time
 
   - Moritz switched to mentor role
   - Sven continued to hack
   - Andreas built CI support at SuSE with patch files
+  - Available from GHC 9.12
 
 - Strong advice: Reach out and team up
   - I wouldn't have imagined that such great collaboration between former strangers would be possible!
@@ -68,11 +77,11 @@ author: Sven Tennie
 - RTS Linker
 - Native Code Generation Backend
   - Fullfills whole testsuite
-  - Released: 9.12
 - Tier 3
   - Due to lack of powerful hardware (CI), there are no official binary distributions, yet
   - Probably not much used yet
     - Happy to receive bug reports!
+- SIMD (Vector) in NCG support WIP
 
 # Vector Register Configuration
 
@@ -87,13 +96,13 @@ author: Sven Tennie
 - RISC-V approach:
 
   1. Make effective register width configurable -> grouping
-  1. Tell when a calculation doesn't fit -> strip mining
+  1. Tell when a configuration doesn't fit -> strip mining
 
 - Benefits:
   - Application can dynamically react on the vector register width (VLEN)
   - HPC software can run on embedded CPUs and vice versa without recompilation
 
-# Vector configuration
+# Vector configuration - Grouping
 
 - Task: Increment each element of a _8bit x 8_ vector by one (128bit register width)
 
@@ -122,7 +131,7 @@ plus_one:
 
 <!-- https://godbolt.org/z/dGfxY7dv3 -->
 
-# Vector configuration (2)
+# Vector configuration - Grouping (2)
 
 - Task: Increment each element of a _8bit x 16_ vector by one (128bit register width)
 
@@ -148,7 +157,7 @@ plus_one:
 
 <!-- https://godbolt.org/z/jWGvWsbE4 -->
 
-# Vector configuration (3)
+# Vector configuration - Grouping (3)
 
 - Task: Increment each element of a _8bit x 32_ vector by one (128bit register width)
 
@@ -176,16 +185,64 @@ plus_one:
 
 <!-- https://llvm.org/devmtg/2023-10/slides/techtalks/Lau-VectorCodegenInTheRISC-VBackend.pdf -->
 
+# Vector configuration - Strip-Mining
+
+- Task: Increment each element of a _8bit x 32_ vector by one (128bit register width)
+
+```c
+uint8_t* plus_one(uint8_t b[32]) {
+    for(int i = 0; i < 32; i++) {
+        b[i]++;
+    }
+    return b;
+}
+```
+
+=>
+
+```asm
+plus_one:
+        # a0 = pointer to the array
+        # a1 = 32 (number of elements in the array)
+
+        li a1, 32             # Set the number of elements explicitly to 32
+
+loop:
+        # Set vector length based on remaining elements with m1 grouping
+        vsetvli t0, a1, e8, m1, ta, ma # Set VL (vector length) for m1 (1x grouping)
+
+        # Load vector from memory
+        vl1r.v v8, (a0)
+
+        # Perform computation
+        vadd.vi v8, v8, 1     # Add 1 to each element in the vector
+
+        # Store result back to memory
+        vs1r.v v8, (a0)
+
+        # Update pointers and counters for next chunk
+        # slli t1, t0, 1        # t1 = t0 * 2 (byte offset for m1, 16-bit elements)
+        add a0, a0, t0        # Move pointer a0 forward by VL*element_size
+        sub a1, a1, t0        # Reduce remaining elements (a1 -= VL)
+
+        bnez a1, loop         # Repeat if there are remaining elements
+
+end:
+        ret                   # Return to caller
+```
+
 # Vectors: Questions to investigate
 
 - How can we allocate register groups? (Virtual registers that cover multiple consecutive registers)
 - How to optimize for minimal vector re-configuration?
+  - My naive approach is to fold over the final instructions in the Assembly emitting stage (`Ppr.hs`)
 
 # NCG development: Tipps & Tricks
 
 ## Compiler Explorer (Godbolt)
 
-- C and LLVM IR
+- Learn from others
+- C and LLVM IR are good choices
 - Intrinsics are a typed way to play with Assembly
 
 ## ghc.nix
