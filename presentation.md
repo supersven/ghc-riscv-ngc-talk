@@ -10,7 +10,7 @@ author: Sven Tennie
   - RV32I Base Integer Instruction Set -> ~40 instructions
   - Basic interpreter can be built in an afternoon
 - Augmented by many extensions (sub-standards)
-- Custom extensions are aticipated by the ISA
+- Custom extensions are anticipated by the ISA
   - Ideal research vehicle for computer architectures
 - ISA like playing with Lego bricks
 - ISA is open source, implementations (SOCs) not necessarily
@@ -250,6 +250,8 @@ end:
 - https://gitlab.haskell.org/ghc/ghc.nix
 - Nix env to build GHC
   - Cross-compiler envs possible
+
+## Run test cross with Qemu
 
 ## test-primops
 
