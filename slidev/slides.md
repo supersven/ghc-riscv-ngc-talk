@@ -1,16 +1,33 @@
 ---
 theme: neversink
-layout: intro
+layout: cover
+author: Sven Tennie
 ---
 
 # GHC's RISC-V Native Code Generation Backend
 
-Haskell Implementors' Workshop 2025
-Sven Tennie
+- Haskell Implementors' Workshop 2025
+- Sven Tennie
 
 ---
+layout: section
+color: sky
+align: c
+---
+
+# RISC-V Overview
+
+---
+layout: top-title
+align: c
+color: light
+---
+
+:: title ::
 
 # RISC-V
+
+:: content ::
 
 - 32bit *R*educed *I*nstruction *S*et as base
   - RV32I Base Integer Instruction Set -> ~40 instructions
@@ -28,10 +45,25 @@ Sven Tennie
   - Several vendors
   - Hobbiests
     - Fun fact: Some hobbiests even tape out their designs via e.g. tinytapeout.com
-
+---
+layout: section
+color: sky
+align: c
 ---
 
+# GHC Implementation Status
+
+---
+layout: top-title
+align: c
+color: light
+---
+
+:: title ::
+
 # RISC-V Status
+
+:: content ::
 
 - Standard (ISA, Calling Convention, ...) pretty complete
 - Vibrant community
@@ -98,6 +130,14 @@ Sven Tennie
 - SIMD (Vector) in NCG support WIP
 
 ---
+layout: section
+color: sky
+align: c
+---
+
+# Vector (SIMD) Support
+
+---
 
 # Vector Register Configuration
 
@@ -119,10 +159,17 @@ Sven Tennie
   - HPC software can run on embedded CPUs and vice versa without recompilation
 
 ---
+layout: two-cols-title
+columns: is-6
+---
+
+:: title ::
 
 # Vector configuration - Grouping
 
 - Task: Increment each element of a _8bit x 8_ vector by one (128bit register width)
+
+:: left ::
 
 ```c
 #include <stdlib.h>
@@ -136,7 +183,7 @@ uint8_t* plus_one(uint8_t b[8]) {
 }
 ```
 
-=>
+:: right ::
 
 ```asm
 plus_one:
@@ -150,10 +197,16 @@ plus_one:
 <!-- https://godbolt.org/z/dGfxY7dv3 -->
 
 ---
+layout: two-cols-title
+columns: is-6
+---
 
+:: title ::
 # Vector configuration - Grouping (2)
 
 - Task: Increment each element of a _8bit x 16_ vector by one (128bit register width)
+
+:: left ::
 
 ```c
 uint8_t* plus_one(uint8_t b[16]) {
@@ -163,8 +216,7 @@ uint8_t* plus_one(uint8_t b[16]) {
     return b;
 }
 ```
-
-=>
+:: right ::
 
 ```asm
 plus_one:
@@ -178,10 +230,17 @@ plus_one:
 <!-- https://godbolt.org/z/jWGvWsbE4 -->
 
 ---
+layout: two-cols-title
+columns: is-6
+---
+
+:: title ::
 
 # Vector configuration - Grouping (3)
 
 - Task: Increment each element of a _8bit x 32_ vector by one (128bit register width)
+
+:: left ::
 
 ```c
 uint8_t* plus_one(uint8_t b[32]) {
@@ -192,7 +251,7 @@ uint8_t* plus_one(uint8_t b[32]) {
 }
 ```
 
-=>
+:: right ::
 
 ```asm
 plus_one:
@@ -208,11 +267,17 @@ plus_one:
 <!-- https://llvm.org/devmtg/2023-10/slides/techtalks/Lau-VectorCodegenInTheRISC-VBackend.pdf -->
 
 ---
+layout: two-cols-title
+columns: is-6
+---
+
+:: title ::
 
 # Vector configuration - Strip-Mining
 
 - Task: Increment each element of a _8bit x 32_ vector by one (128bit register width)
 
+:: left ::
 ```c
 uint8_t* plus_one(uint8_t b[32]) {
     for(int i = 0; i < 32; i++) {
@@ -222,7 +287,7 @@ uint8_t* plus_one(uint8_t b[32]) {
 }
 ```
 
-=>
+:: right ::
 
 ```asm
 plus_one:
@@ -264,39 +329,47 @@ end:
   - My naive approach is to fold over the final instructions in the Assembly emitting stage (`Ppr.hs`)
 
 ---
+layout: section
+color: sky
+---
 
 # NCG development: Tipps & Tricks
 
 ---
 
-## Compiler Explorer (Godbolt)
+# Compiler Explorer (Godbolt)
 
 - Learn from others
 - C and LLVM IR are good choices
 - Intrinsics are a typed way to play with Assembly
 
-## ghc.nix
+---
+# ghc.nix
 
 - https://gitlab.haskell.org/ghc/ghc.nix
 - Nix env to build GHC
   - Cross-compiler envs possible
 
-## Run test cross with Qemu
+---
+# Run test cross with Qemu
 
-## test-primops
+---
+# test-primops
 
 - https://gitlab.haskell.org/ghc/test-primops
 - QuickCheck tests for PrimOps
 - Compares your GHC to another version
   - Cross possible
 
-## Build Compiler with LLVM
+---
+# Build Compiler with LLVM
 
 - Focus on small bits: One at a time
 - Build GHC itself and libraries with `-fllvm`
 - Focus on one test / features at a time
 
-## Reduce problems
+---
+# Reduce problems
 
 - Adjust tests
   - Build the smallest reproducer possible
@@ -304,13 +377,15 @@ end:
 - Run testsuite subsets
 - Write small Cmm reproducers by hand
 
-## Your are not alone!
+---
+# Your are not alone!
 
 - Matrix group
 - Mailing list
 - Discourse
 
-## Hunting Heisenbugs
+---
+# Hunting Heisenbugs
 
 - Bugs that disappear when you "look" at them
   - Trace logs and debuggers (GDB) change the timing of programs and execution at CPU-level
@@ -318,3 +393,5 @@ end:
 - My worst Heisenbug was a missing memory barrier (program cache flush, `fence.i` instruction) in the linker
   - Illegal instruction exceptions at weird places
   - Gone when the timing changed e.g. by adding trace logs
+
+---
