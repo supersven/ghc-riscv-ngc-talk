@@ -1,639 +1,320 @@
 ---
-# You can also start simply with 'default'
-theme: seriph
-# random image from a curated Unsplash collection by Anthony
-# like them? see https://unsplash.com/collections/94734566/slidev
-background: https://cover.sli.dev
-# some information about your slides (markdown enabled)
-title: Welcome to Slidev
-info: |
-  ## Slidev Starter Template
-  Presentation slides for developers.
-
-  Learn more at [Sli.dev](https://sli.dev)
-# apply unocss classes to the current slide
-class: text-center
-# https://sli.dev/features/drawing
-drawings:
-  persist: false
-# slide transition: https://sli.dev/guide/animations.html#slide-transitions
-transition: slide-left
-# enable MDC Syntax: https://sli.dev/features/mdc
-mdc: true
-# open graph
-# seoMeta:
-#  ogImage: https://cover.sli.dev
+theme: neversink
+layout: intro
 ---
 
-# Welcome to Slidev
+# GHC's RISC-V Native Code Generation Backend
 
-Presentation slides for developers
-
-<div @click="$slidev.nav.next" class="mt-12 py-1" hover:bg="white op-10">
-  Press Space for next page <carbon:arrow-right />
-</div>
-
-<div class="abs-br m-6 text-xl">
-  <button @click="$slidev.nav.openInEditor()" title="Open in Editor" class="slidev-icon-btn">
-    <carbon:edit />
-  </button>
-  <a href="https://github.com/slidevjs/slidev" target="_blank" class="slidev-icon-btn">
-    <carbon:logo-github />
-  </a>
-</div>
-
-<!--
-The last comment block of each slide will be treated as slide notes. It will be visible and editable in Presenter Mode along with the slide. [Read more in the docs](https://sli.dev/guide/syntax.html#notes)
--->
+Haskell Implementors' Workshop 2025
+Sven Tennie
 
 ---
-transition: fade-out
----
 
-# What is Slidev?
+# RISC-V
 
-Slidev is a slides maker and presenter designed for developers, consist of the following features
-
-- 📝 **Text-based** - focus on the content with Markdown, and then style them later
-- 🎨 **Themable** - themes can be shared and re-used as npm packages
-- 🧑‍💻 **Developer Friendly** - code highlighting, live coding with autocompletion
-- 🤹 **Interactive** - embed Vue components to enhance your expressions
-- 🎥 **Recording** - built-in recording and camera view
-- 📤 **Portable** - export to PDF, PPTX, PNGs, or even a hostable SPA
-- 🛠 **Hackable** - virtually anything that's possible on a webpage is possible in Slidev
-<br>
-<br>
-
-Read more about [Why Slidev?](https://sli.dev/guide/why)
-
-<!--
-You can have `style` tag in markdown to override the style for the current page.
-Learn more: https://sli.dev/features/slide-scope-style
--->
-
-<style>
-h1 {
-  background-color: #2B90B6;
-  background-image: linear-gradient(45deg, #4EC5D4 10%, #146b8c 20%);
-  background-size: 100%;
-  -webkit-background-clip: text;
-  -moz-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  -moz-text-fill-color: transparent;
-}
-</style>
-
-<!--
-Here is another comment.
--->
+- 32bit *R*educed *I*nstruction *S*et as base
+  - RV32I Base Integer Instruction Set -> ~40 instructions
+  - Basic interpreter can be built in an afternoon
+- Augmented by many extensions (sub-standards)
+- Custom extensions are anticipated by the ISA
+  - Ideal research vehicle for computer architectures
+- ISA like playing with Lego bricks
+- ISA is open source, implementations (SOCs) not necessarily
+  - License: _Creative Commons Attribution 4.0 International_
+  - Development on GitHub
+  - Conceptualization in working groups at _RISC-V International_ foundation
+    - Free membership for individuals
+- Everyone is free to build a RISC-V processor:
+  - Several vendors
+  - Hobbiests
+    - Fun fact: Some hobbiests even tape out their designs via e.g. tinytapeout.com
 
 ---
-transition: slide-up
-level: 2
----
 
-# Navigation
+# RISC-V Status
 
-Hover on the bottom-left corner to see the navigation's controls panel, [learn more](https://sli.dev/guide/ui#navigation-bar)
-
-## Keyboard Shortcuts
-
-|                                                     |                             |
-| --------------------------------------------------- | --------------------------- |
-| <kbd>right</kbd> / <kbd>space</kbd>                 | next animation or slide     |
-| <kbd>left</kbd>  / <kbd>shift</kbd><kbd>space</kbd> | previous animation or slide |
-| <kbd>up</kbd>                                       | previous slide              |
-| <kbd>down</kbd>                                     | next slide                  |
-
-<!-- https://sli.dev/guide/animations.html#click-animation -->
-<img
-  v-click
-  class="absolute -bottom-9 -left-7 w-80 opacity-50"
-  src="https://sli.dev/assets/arrow-bottom-left.svg"
-  alt=""
-/>
-<p v-after class="absolute bottom-23 left-45 opacity-30 transform -rotate-10">Here!</p>
+- Standard (ISA, Calling Convention, ...) pretty complete
+- Vibrant community
+- Lack of powerful hardware
+  - No good cloud options -> No native cloud CI
+  - Cores comparable to ARM A55 (2017)
+    - Your smartphone might be more powerful than RISC-V SBCs
+- Lot's of movement though
+  - New boards and chips appear frequently
+  - Many manufacturers
+  - Research all over the world
+    - E.g. EU grant for RISC-V HPC research
+      - DARE (Digital Autonomy with RISC-V in Europe)
+      - Funding: 240 Million Euros
+- There are still some dragons ...
+  - Tools don't support the full instruction set
+  - Tools sometimes still have bugs ...
+  - Cores may have bugs
+  - Core may not adhere to the ratified standards because it pre-dates it
 
 ---
-layout: two-cols
-layoutClass: gap-16
----
 
-# Table of contents
+# ISA naming scheme
 
-You can use the `Toc` component to generate a table of contents for your slides:
-
-```html
-<Toc minDepth="1" maxDepth="1" />
-```
-
-The title will be inferred from your slide content, or you can override it with `title` and `level` in your frontmatter.
-
-::right::
-
-<Toc text-sm minDepth="1" maxDepth="2" />
+- Start with a base ISA: RV32I, RV64I or RV64E
+- Add the extensions in canonical order
+- The ISA is pretty new, so extensions' versions can usually be ignored
+  - If not, the format is `<extension><major>p<minor>`
+- Reduce common extensions to sets (e.g. *G*eneral for _IMAFDZicsr_Zifencei_)
+- E.g. `RV64IMAFDZicsr_ZifenceiV1p0` -> `RV64GV1p0` -> `RV64GV1` or `RV64GV`
+- _Profiles_ (e.g. RVA23) define minimum requirements to simplify this
+  - Otherwise, buying and building for a consumer computer could be a nightmare
+  - (It still is, because many vendors don't mention profiles yet on their marketing pages)
+  - Linux distributions handle this by relying on a small extension set (usually _RV64GC_)
 
 ---
-layout: image-right
-image: https://cover.sli.dev
----
 
-# Code
+# GHC RISC-V History
 
-Use code snippets and get the highlighting directly, and even types hover!
+- LLVM backend by Andreas Schwab (October 2020; GHC 9.2)
+- Moritz Angerman and Sven Tennie accidentally started NCG at the same time
 
-```ts {all|5|7|7-8|10|all} twoslash
-// TwoSlash enables TypeScript hover information
-// and errors in markdown code blocks
-// More at https://shiki.style/packages/twoslash
+  - Moritz switched to mentor role
+  - Sven continued to hack
+  - Andreas built CI support at SuSE with patch files
+  - Available from GHC 9.12
 
-import { computed, ref } from 'vue'
-
-const count = ref(0)
-const doubled = computed(() => count.value * 2)
-
-doubled.value = 2
-```
-
-<arrow v-click="[4, 5]" x1="350" y1="310" x2="195" y2="334" color="#953" width="2" arrowSize="1" />
-
-<!-- This allow you to embed external code blocks -->
-<<< @/snippets/external.ts#snippet
-
-<!-- Footer -->
-
-[Learn more](https://sli.dev/features/line-highlighting)
-
-<!-- Inline style -->
-<style>
-.footnotes-sep {
-  @apply mt-5 opacity-10;
-}
-.footnotes {
-  @apply text-sm opacity-75;
-}
-.footnote-backref {
-  display: none;
-}
-</style>
-
-<!--
-Notes can also sync with clicks
-
-[click] This will be highlighted after the first click
-
-[click] Highlighted with `count = ref(0)`
-
-[click:3] Last click (skip two clicks)
--->
+- Strong advice: Reach out and team up
+  - I wouldn't have imagined that such great collaboration between former strangers would be possible!
+  - It is!
 
 ---
-level: 2
+
+# GHC RISC-V status
+
+- LLVM Backend
+- RTS Linker
+- Native Code Generation Backend
+  - Fullfills whole testsuite
+- Tier 3
+  - Due to lack of powerful hardware (CI), there are no official binary distributions, yet
+  - Probably not much used yet
+    - Happy to receive bug reports!
+- SIMD (Vector) in NCG support WIP
+
 ---
 
-# Shiki Magic Move
+# Vector Register Configuration
 
-Powered by [shiki-magic-move](https://shiki-magic-move.netlify.app/), Slidev supports animations across multiple code snippets.
+- Problem: Applications need very different vector sizes
 
-Add multiple code blocks and wrap them with <code>````md magic-move</code> (four backticks) to enable the magic move. For example:
+  - Embedded chips should save silicon
+  - HPC may need big vectors
+  - usually a tradeoff
+  - usually max vector sizes are bound to ISA features
+  - Standard allows 32 to 65,536 bits per vector register (TODO: Check this!)
 
-````md magic-move {lines: true}
-```ts {*|2|*}
-// step 1
-const author = reactive({
-  name: 'John Doe',
-  books: [
-    'Vue 2 - Advanced Guide',
-    'Vue 3 - Basic Guide',
-    'Vue 4 - The Mystery'
-  ]
-})
-```
+- RISC-V approach:
 
-```ts {*|1-2|3-4|3-4,8}
-// step 2
-export default {
-  data() {
-    return {
-      author: {
-        name: 'John Doe',
-        books: [
-          'Vue 2 - Advanced Guide',
-          'Vue 3 - Basic Guide',
-          'Vue 4 - The Mystery'
-        ]
-      }
+  1. Make effective register width configurable -> grouping
+  1. Tell when a configuration doesn't fit -> strip mining
+
+- Benefits:
+  - Application can dynamically react on the vector register width (VLEN)
+  - HPC software can run on embedded CPUs and vice versa without recompilation
+
+---
+
+# Vector configuration - Grouping
+
+- Task: Increment each element of a _8bit x 8_ vector by one (128bit register width)
+
+```c
+#include <stdlib.h>
+#include <riscv_vector.h>
+
+uint8_t* plus_one(uint8_t b[8]) {
+    for(int i = 0; i < 8; i++) {
+        b[i]++;
     }
-  }
+    return b;
 }
 ```
 
-```ts
-// step 3
-export default {
-  data: () => ({
-    author: {
-      name: 'John Doe',
-      books: [
-        'Vue 2 - Advanced Guide',
-        'Vue 3 - Basic Guide',
-        'Vue 4 - The Mystery'
-      ]
+=>
+
+```asm
+plus_one:
+        vsetivli        zero, 8, e8, mf2, ta, ma
+        vle8.v  v8, (a0)
+        vadd.vi v8, v8, 1
+        vse8.v  v8, (a0)
+        ret
+```
+
+<!-- https://godbolt.org/z/dGfxY7dv3 -->
+
+---
+
+# Vector configuration - Grouping (2)
+
+- Task: Increment each element of a _8bit x 16_ vector by one (128bit register width)
+
+```c
+uint8_t* plus_one(uint8_t b[16]) {
+    for(int i = 0; i < 16; i++) {
+        b[i]++;
     }
-  })
+    return b;
 }
 ```
 
-Non-code blocks are ignored.
+=>
 
-```vue
-<!-- step 4 -->
-<script setup>
-const author = {
-  name: 'John Doe',
-  books: [
-    'Vue 2 - Advanced Guide',
-    'Vue 3 - Basic Guide',
-    'Vue 4 - The Mystery'
-  ]
+```asm
+plus_one:
+        vl1r.v  v8, (a0)
+        vsetivli        zero, 16, e8, m1, ta, ma
+        vadd.vi v8, v8, 1
+        vs1r.v  v8, (a0)
+        ret
+```
+
+<!-- https://godbolt.org/z/jWGvWsbE4 -->
+
+---
+
+# Vector configuration - Grouping (3)
+
+- Task: Increment each element of a _8bit x 32_ vector by one (128bit register width)
+
+```c
+uint8_t* plus_one(uint8_t b[32]) {
+    for(int i = 0; i < 32; i++) {
+        b[i]++;
+    }
+    return b;
 }
-</script>
-```
-````
-
----
-
-# Components
-
-<div grid="~ cols-2 gap-4">
-<div>
-
-You can use Vue components directly inside your slides.
-
-We have provided a few built-in components like `<Tweet/>` and `<Youtube/>` that you can use directly. And adding your custom components is also super easy.
-
-```html
-<Counter :count="10" />
 ```
 
-<!-- ./components/Counter.vue -->
-<Counter :count="10" m="t-4" />
+=>
 
-Check out [the guides](https://sli.dev/builtin/components.html) for more.
-
-</div>
-<div>
-
-```html
-<Tweet id="1390115482657726468" />
+```asm
+plus_one:
+        vl2r.v  v8, (a0)
+        vsetvli a1, zero, e8, m2, ta, ma
+        vadd.vi v8, v8, 1
+        vs2r.v  v8, (a0)
+        ret
 ```
 
-<Tweet id="1390115482657726468" scale="0.65" />
+<!-- https://godbolt.org/z/bjr57ohsr -->
 
-</div>
-</div>
-
-<!--
-Presenter note with **bold**, *italic*, and ~~striked~~ text.
-
-Also, HTML elements are valid:
-<div class="flex w-full">
-  <span style="flex-grow: 1;">Left content</span>
-  <span>Right content</span>
-</div>
--->
-
----
-class: px-20
----
-
-# Themes
-
-Slidev comes with powerful theming support. Themes can provide styles, layouts, components, or even configurations for tools. Switching between themes by just **one edit** in your frontmatter:
-
-<div grid="~ cols-2 gap-2" m="t-2">
-
-```yaml
----
-theme: default
----
-```
-
-```yaml
----
-theme: seriph
----
-```
-
-<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-default/01.png?raw=true" alt="">
-
-<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-seriph/01.png?raw=true" alt="">
-
-</div>
-
-Read more about [How to use a theme](https://sli.dev/guide/theme-addon#use-theme) and
-check out the [Awesome Themes Gallery](https://sli.dev/resources/theme-gallery).
+<!-- https://llvm.org/devmtg/2023-10/slides/techtalks/Lau-VectorCodegenInTheRISC-VBackend.pdf -->
 
 ---
 
-# Clicks Animations
+# Vector configuration - Strip-Mining
 
-You can add `v-click` to elements to add a click animation.
+- Task: Increment each element of a _8bit x 32_ vector by one (128bit register width)
 
-<div v-click>
-
-This shows up when you click the slide:
-
-```html
-<div v-click>This shows up when you click the slide.</div>
-```
-
-</div>
-
-<br>
-
-<v-click>
-
-The <span v-mark.red="3"><code>v-mark</code> directive</span>
-also allows you to add
-<span v-mark.circle.orange="4">inline marks</span>
-, powered by [Rough Notation](https://roughnotation.com/):
-
-```html
-<span v-mark.underline.orange>inline markers</span>
-```
-
-</v-click>
-
-<div mt-20 v-click>
-
-[Learn more](https://sli.dev/guide/animations#click-animation)
-
-</div>
-
----
-
-# Motions
-
-Motion animations are powered by [@vueuse/motion](https://motion.vueuse.org/), triggered by `v-motion` directive.
-
-```html
-<div
-  v-motion
-  :initial="{ x: -80 }"
-  :enter="{ x: 0 }"
-  :click-3="{ x: 80 }"
-  :leave="{ x: 1000 }"
->
-  Slidev
-</div>
-```
-
-<div class="w-60 relative">
-  <div class="relative w-40 h-40">
-    <img
-      v-motion
-      :initial="{ x: 800, y: -100, scale: 1.5, rotate: -50 }"
-      :enter="final"
-      class="absolute inset-0"
-      src="https://sli.dev/logo-square.png"
-      alt=""
-    />
-    <img
-      v-motion
-      :initial="{ y: 500, x: -100, scale: 2 }"
-      :enter="final"
-      class="absolute inset-0"
-      src="https://sli.dev/logo-circle.png"
-      alt=""
-    />
-    <img
-      v-motion
-      :initial="{ x: 600, y: 400, scale: 2, rotate: 100 }"
-      :enter="final"
-      class="absolute inset-0"
-      src="https://sli.dev/logo-triangle.png"
-      alt=""
-    />
-  </div>
-
-  <div
-    class="text-5xl absolute top-14 left-40 text-[#2B90B6] -z-1"
-    v-motion
-    :initial="{ x: -80, opacity: 0}"
-    :enter="{ x: 0, opacity: 1, transition: { delay: 2000, duration: 1000 } }">
-    Slidev
-  </div>
-</div>
-
-<!-- vue script setup scripts can be directly used in markdown, and will only affects current page -->
-<script setup lang="ts">
-const final = {
-  x: 0,
-  y: 0,
-  rotate: 0,
-  scale: 1,
-  transition: {
-    type: 'spring',
-    damping: 10,
-    stiffness: 20,
-    mass: 2
-  }
+```c
+uint8_t* plus_one(uint8_t b[32]) {
+    for(int i = 0; i < 32; i++) {
+        b[i]++;
+    }
+    return b;
 }
-</script>
-
-<div
-  v-motion
-  :initial="{ x:35, y: 30, opacity: 0}"
-  :enter="{ y: 0, opacity: 1, transition: { delay: 3500 } }">
-
-[Learn more](https://sli.dev/guide/animations.html#motion)
-
-</div>
-
----
-
-# LaTeX
-
-LaTeX is supported out-of-box. Powered by [KaTeX](https://katex.org/).
-
-<div h-3 />
-
-Inline $\sqrt{3x-1}+(1+x)^2$
-
-Block
-$$ {1|3|all}
-\begin{aligned}
-\nabla \cdot \vec{E} &= \frac{\rho}{\varepsilon_0} \\
-\nabla \cdot \vec{B} &= 0 \\
-\nabla \times \vec{E} &= -\frac{\partial\vec{B}}{\partial t} \\
-\nabla \times \vec{B} &= \mu_0\vec{J} + \mu_0\varepsilon_0\frac{\partial\vec{E}}{\partial t}
-\end{aligned}
-$$
-
-[Learn more](https://sli.dev/features/latex)
-
----
-
-# Diagrams
-
-You can create diagrams / graphs from textual descriptions, directly in your Markdown.
-
-<div class="grid grid-cols-4 gap-5 pt-4 -mb-6">
-
-```mermaid {scale: 0.5, alt: 'A simple sequence diagram'}
-sequenceDiagram
-    Alice->John: Hello John, how are you?
-    Note over Alice,John: A typical interaction
 ```
 
-```mermaid {theme: 'neutral', scale: 0.8}
-graph TD
-B[Text] --> C{Decision}
-C -->|One| D[Result 1]
-C -->|Two| E[Result 2]
-```
+=>
 
-```mermaid
-mindmap
-  root((mindmap))
-    Origins
-      Long history
-      ::icon(fa fa-book)
-      Popularisation
-        British popular psychology author Tony Buzan
-    Research
-      On effectiveness<br/>and features
-      On Automatic creation
-        Uses
-            Creative techniques
-            Strategic planning
-            Argument mapping
-    Tools
-      Pen and paper
-      Mermaid
-```
+```asm
+plus_one:
+        # a0 = pointer to the array
+        # a1 = 32 (number of elements in the array)
 
-```plantuml {scale: 0.7}
-@startuml
+        li a1, 32             # Set the number of elements explicitly to 32
 
-package "Some Group" {
-  HTTP - [First Component]
-  [Another Component]
-}
+loop:
+        # Set vector length based on remaining elements with m1 grouping
+        vsetvli t0, a1, e8, m1, ta, ma # Set VL (vector length) for m1 (1x grouping)
 
-node "Other Groups" {
-  FTP - [Second Component]
-  [First Component] --> FTP
-}
+        # Load vector from memory
+        vl1r.v v8, (a0)
 
-cloud {
-  [Example 1]
-}
+        # Perform computation
+        vadd.vi v8, v8, 1     # Add 1 to each element in the vector
 
-database "MySql" {
-  folder "This is my folder" {
-    [Folder 3]
-  }
-  frame "Foo" {
-    [Frame 4]
-  }
-}
+        # Store result back to memory
+        vs1r.v v8, (a0)
 
-[Another Component] --> [Example 1]
-[Example 1] --> [Folder 3]
-[Folder 3] --> [Frame 4]
+        # Update pointers and counters for next chunk
+        # slli t1, t0, 1        # t1 = t0 * 2 (byte offset for m1, 16-bit elements)
+        add a0, a0, t0        # Move pointer a0 forward by VL*element_size
+        sub a1, a1, t0        # Reduce remaining elements (a1 -= VL)
 
-@enduml
-```
+        bnez a1, loop         # Repeat if there are remaining elements
 
-</div>
-
-Learn more: [Mermaid Diagrams](https://sli.dev/features/mermaid) and [PlantUML Diagrams](https://sli.dev/features/plantuml)
-
----
-foo: bar
-dragPos:
-  square: 691,32,167,_,-16
----
-
-# Draggable Elements
-
-Double-click on the draggable elements to edit their positions.
-
-<br>
-
-###### Directive Usage
-
-```md
-<img v-drag="'square'" src="https://sli.dev/logo.png">
-```
-
-<br>
-
-###### Component Usage
-
-```md
-<v-drag text-3xl>
-  <div class="i-carbon:arrow-up" />
-  Use the `v-drag` component to have a draggable container!
-</v-drag>
-```
-
-<v-drag pos="663,206,261,_,-15">
-  <div text-center text-3xl border border-main rounded>
-    Double-click me!
-  </div>
-</v-drag>
-
-<img v-drag="'square'" src="https://sli.dev/logo.png">
-
-###### Draggable Arrow
-
-```md
-<v-drag-arrow two-way />
-```
-
-<v-drag-arrow pos="67,452,253,46" two-way op70 />
-
----
-src: ./pages/imported-slides.md
-hide: false
----
-
----
-
-# Monaco Editor
-
-Slidev provides built-in Monaco Editor support.
-
-Add `{monaco}` to the code block to turn it into an editor:
-
-```ts {monaco}
-import { ref } from 'vue'
-import { emptyArray } from './external'
-
-const arr = ref(emptyArray(10))
-```
-
-Use `{monaco-run}` to create an editor that can execute the code directly in the slide:
-
-```ts {monaco-run}
-import { version } from 'vue'
-import { emptyArray, sayHello } from './external'
-
-sayHello()
-console.log(`vue ${version}`)
-console.log(emptyArray<number>(10).reduce(fib => [...fib, fib.at(-1)! + fib.at(-2)!], [1, 1]))
+end:
+        ret                   # Return to caller
 ```
 
 ---
-layout: center
-class: text-center
+
+# Vectors: Questions to investigate
+
+- How can we allocate register groups? (Virtual registers that cover multiple consecutive registers)
+- How to optimize for minimal vector re-configuration?
+  - My naive approach is to fold over the final instructions in the Assembly emitting stage (`Ppr.hs`)
+
 ---
 
-# Learn More
+# NCG development: Tipps & Tricks
 
-[Documentation](https://sli.dev) · [GitHub](https://github.com/slidevjs/slidev) · [Showcases](https://sli.dev/resources/showcases)
+---
 
-<PoweredBySlidev mt-10 />
+## Compiler Explorer (Godbolt)
+
+- Learn from others
+- C and LLVM IR are good choices
+- Intrinsics are a typed way to play with Assembly
+
+## ghc.nix
+
+- https://gitlab.haskell.org/ghc/ghc.nix
+- Nix env to build GHC
+  - Cross-compiler envs possible
+
+## Run test cross with Qemu
+
+## test-primops
+
+- https://gitlab.haskell.org/ghc/test-primops
+- QuickCheck tests for PrimOps
+- Compares your GHC to another version
+  - Cross possible
+
+## Build Compiler with LLVM
+
+- Focus on small bits: One at a time
+- Build GHC itself and libraries with `-fllvm`
+- Focus on one test / features at a time
+
+## Reduce problems
+
+- Adjust tests
+  - Build the smallest reproducer possible
+  - Reading a lot of Assembly or Cmm can be very exhausting
+- Run testsuite subsets
+- Write small Cmm reproducers by hand
+
+## Your are not alone!
+
+- Matrix group
+- Mailing list
+- Discourse
+
+## Hunting Heisenbugs
+
+- Bugs that disappear when you "look" at them
+  - Trace logs and debuggers (GDB) change the timing of programs and execution at CPU-level
+- Trace instructions and/or CPU state with Qemu
+- My worst Heisenbug was a missing memory barrier (program cache flush, `fence.i` instruction) in the linker
+  - Illegal instruction exceptions at weird places
+  - Gone when the timing changed e.g. by adding trace logs
