@@ -29,13 +29,26 @@ color: light
 
 :: content ::
 
-- 32bit *R*educed *I*nstruction *S*et as base
-  - RV32I Base Integer Instruction Set -> ~40 instructions
-  - Basic interpreter can be built in an afternoon
+- 32bit **R**educed **I**nstruction **S**et as base
+  - RV32I *Base Integer Instruction Set* -> ~40 instructions
 - Augmented by many extensions (sub-standards)
+  - ISA like playing with Lego bricks
 - Custom extensions are anticipated by the ISA
   - Ideal research vehicle for computer architectures
-- ISA like playing with Lego bricks
+
+---
+layout: top-title
+align: c
+color: light
+---
+
+:: title ::
+
+# RISC-V
+
+:: content ::
+
+- Basic interpreter can be built in an afternoon
 - ISA is open source, implementations (SOCs) not necessarily
   - License: _Creative Commons Attribution 4.0 International_
   - Development on GitHub
@@ -45,14 +58,6 @@ color: light
   - Several vendors
   - Hobbiests
     - Fun fact: Some hobbiests even tape out their designs via e.g. tinytapeout.com
----
-layout: section
-color: sky
-align: c
----
-
-# GHC Implementation Status
-
 ---
 layout: top-title
 align: c
@@ -85,8 +90,17 @@ color: light
   - Core may not adhere to the ratified standards because it pre-dates it
 
 ---
+layout: top-title
+align: c
+color: light
+---
+
+:: title ::
+
 
 # ISA naming scheme
+
+:: content ::
 
 - Start with a base ISA: RV32I, RV64I or RV64E
 - Add the extensions in canonical order
@@ -100,8 +114,26 @@ color: light
   - Linux distributions handle this by relying on a small extension set (usually _RV64GC_)
 
 ---
+layout: section
+color: sky
+align: c
+---
+
+# GHC Implementation Status
+
+
+---
+layout: top-title
+align: c
+color: light
+---
+
+:: title ::
+
 
 # GHC RISC-V History
+
+:: content ::
 
 - LLVM backend by Andreas Schwab (October 2020; GHC 9.2)
 - Moritz Angerman and Sven Tennie accidentally started NCG at the same time
@@ -116,8 +148,16 @@ color: light
   - It is!
 
 ---
+layout: top-title
+align: c
+color: light
+---
+
+:: title ::
 
 # GHC RISC-V status
+
+:: content ::
 
 - LLVM Backend
 - RTS Linker
@@ -138,8 +178,16 @@ align: c
 # Vector (SIMD) Support
 
 ---
+layout: top-title
+align: c
+color: light
+---
+
+:: title ::
 
 # Vector Register Configuration
+
+:: content ::
 
 - Problem: Applications need very different vector sizes
 
@@ -321,8 +369,17 @@ end:
 ```
 
 ---
+layout: top-title
+align: c
+color: light
+---
+
+:: title ::
+
 
 # Vectors: Questions to investigate
+
+:: content ::
 
 - How can we allocate register groups? (Virtual registers that cover multiple consecutive registers)
 - How to optimize for minimal vector re-configuration?
@@ -336,25 +393,61 @@ color: sky
 # NCG development: Tipps & Tricks
 
 ---
+layout: top-title
+align: c
+color: light
+---
+
+:: title ::
+
 
 # Compiler Explorer (Godbolt)
+
+:: content ::
 
 - Learn from others
 - C and LLVM IR are good choices
 - Intrinsics are a typed way to play with Assembly
 
 ---
+layout: top-title
+align: c
+color: light
+---
+
+:: title ::
+
 # ghc.nix
+
+:: content ::
 
 - https://gitlab.haskell.org/ghc/ghc.nix
 - Nix env to build GHC
   - Cross-compiler envs possible
 
 ---
+layout: top-title
+align: c
+color: light
+---
+
+:: title ::
+
 # Run test cross with Qemu
 
+:: content ::
+
 ---
+layout: top-title
+align: c
+color: light
+---
+
+:: title ::
+
 # test-primops
+
+:: content ::
 
 - https://gitlab.haskell.org/ghc/test-primops
 - QuickCheck tests for PrimOps
@@ -362,14 +455,32 @@ color: sky
   - Cross possible
 
 ---
+layout: top-title
+align: c
+color: light
+---
+
+:: title ::
+
 # Build Compiler with LLVM
+
+:: content ::
 
 - Focus on small bits: One at a time
 - Build GHC itself and libraries with `-fllvm`
 - Focus on one test / features at a time
 
 ---
+layout: top-title
+align: c
+color: light
+---
+
+:: title ::
+
 # Reduce problems
+
+:: content ::
 
 - Adjust tests
   - Build the smallest reproducer possible
@@ -378,14 +489,32 @@ color: sky
 - Write small Cmm reproducers by hand
 
 ---
+layout: top-title
+align: c
+color: light
+---
+
+:: title ::
+
 # Your are not alone!
+
+:: content ::
 
 - Matrix group
 - Mailing list
 - Discourse
 
 ---
+layout: top-title
+align: c
+color: light
+---
+
+:: title ::
+
 # Hunting Heisenbugs
+
+:: content ::
 
 - Bugs that disappear when you "look" at them
   - Trace logs and debuggers (GDB) change the timing of programs and execution at CPU-level
