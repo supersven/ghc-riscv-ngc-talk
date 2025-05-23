@@ -76,6 +76,19 @@ color: light
   - No good cloud options -> No native cloud CI
   - Cores comparable to ARM A55 (2017)
     - Your smartphone might be more powerful than RISC-V SBCs
+
+---
+layout: top-title
+align: c
+color: light
+---
+
+:: title ::
+
+# RISC-V Status
+
+:: content ::
+
 - Lot's of movement though
   - New boards and chips appear frequently
   - Many manufacturers
@@ -83,6 +96,19 @@ color: light
     - E.g. EU grant for RISC-V HPC research
       - DARE (Digital Autonomy with RISC-V in Europe)
       - Funding: 240 Million Euros
+
+---
+layout: top-title
+align: c
+color: light
+---
+
+:: title ::
+
+# RISC-V Status
+
+:: content ::
+
 - There are still some dragons ...
   - Tools don't support the full instruction set
   - Tools sometimes still have bugs ...
@@ -97,7 +123,6 @@ color: light
 
 :: title ::
 
-
 # ISA naming scheme
 
 :: content ::
@@ -107,7 +132,19 @@ color: light
 - The ISA is pretty new, so extensions' versions can usually be ignored
   - If not, the format is `<extension><major>p<minor>`
 - Reduce common extensions to sets (e.g. *G*eneral for _IMAFDZicsr_Zifencei_)
-- E.g. `RV64IMAFDZicsr_ZifenceiV1p0` -> `RV64GV1p0` -> `RV64GV1` or `RV64GV`
+- E.g. `RV64IMAFDZicsr_ZifenceiV1p0` -> `RV64GV1p0` -> `RV64GV1` -> `RV64GV`
+
+---
+layout: top-title
+align: c
+color: light
+---
+
+:: title ::
+# Profiles
+
+:: content ::
+
 - _Profiles_ (e.g. RVA23) define minimum requirements to simplify this
   - Otherwise, buying and building for a consumer computer could be a nightmare
   - (It still is, because many vendors don't mention profiles yet on their marketing pages)
@@ -197,14 +234,51 @@ color: light
   - usually max vector sizes are bound to ISA features
   - Standard allows 32 to 65,536 bits per vector register (TODO: Check this!)
 
+---
+layout: top-title
+align: c
+color: light
+---
+
+:: title ::
+
+# Vector Register Configuration
+
+:: content ::
+
 - RISC-V approach:
 
   1. Make effective register width configurable -> grouping
-  1. Tell when a configuration doesn't fit -> strip mining
+      - Combine multiple vector registers to one effective
+  2. Tell when a configuration doesn't fit -> strip mining
+      - Iterate over vector chunks
 
 - Benefits:
   - Application can dynamically react on the vector register width (VLEN)
   - HPC software can run on embedded CPUs and vice versa without recompilation
+
+---
+layout: top-title
+align: c
+color: light
+---
+
+:: title ::
+
+# Vector Register Configuration Instruction(s)
+
+:: content ::
+
+`vsetivli <VL>, <AVL>, <SEW>, <LMUL>, <tail>, <mask>`
+
+- `VL`: New, effective **V**ector **L**ength (in elements)
+- `AVL`: **A**pplication **V**ector **L**ength
+  - The desired VL
+- `SEW`: **S**ingle **E**lement **W**idth
+  - Width of an element: `e8`, `e16`, `e32`, `e64` (bits)
+- `LMUL`: **L**enght **Mul**tiplier
+  - `mf8` (LMUL=1/8), `mf4` (LMUL=1/4), `mf2` (LMUL=1/2)
+  - `m1` (LMUL=1), `m2` (LMUL=2), `m4` (LMUL=4), `m8` (LMUL=8)
 
 ---
 layout: two-cols-title
