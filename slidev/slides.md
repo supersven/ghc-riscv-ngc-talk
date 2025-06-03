@@ -472,8 +472,14 @@ color: light
 :: content ::
 
 - How can we allocate register groups? (Virtual registers that cover multiple consecutive registers)
+  - This would require the register allocator to be aware of grouped registers
+- Would it be better to apply strip-mining?
+  - Would that work for all `MachOp`s?
 - How to optimize for minimal vector re-configuration?
-  - My naive approach is to fold over the final instructions in the Assembly emitting stage (`Ppr.hs`)
+  - My naive approach is to:
+    - fold over the final instructions in the Assembly emitting stage (`Ppr.hs`)
+    - drop duplicated configuration statements in a block
+  - This ignores optimizations by moving instructions with the same configuration.
 
 ---
 layout: section
@@ -483,8 +489,8 @@ color: sky
 # NCG development: Tipps & Tricks
 
 ---
-layout: top-title
-align: c
+layout: two-cols-title
+columns: is-4
 color: light
 ---
 
@@ -493,11 +499,15 @@ color: light
 
 # Compiler Explorer (Godbolt)
 
-:: content ::
+:: left ::
 
+- https://godbolt.org
 - Learn from others
 - C and LLVM IR are good choices
 - Intrinsics are a typed way to play with Assembly
+
+:: right ::
+![Screenshot](./imgs/godbolt.png)
 
 ---
 layout: top-title
