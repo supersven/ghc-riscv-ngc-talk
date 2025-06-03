@@ -30,7 +30,7 @@ color: light
 :: content ::
 
 - 32bit **R**educed **I**nstruction **S**et as base
-  - RV32I *Base Integer Instruction Set* -> ~40 instructions
+  - RV32I *Base Integer Instruction Set* -> ~40 instructions, ~6 formats
 - Augmented by many extensions (sub-standards)
   - ISA like playing with Lego bricks
 - Custom extensions are anticipated by the ISA
@@ -149,6 +149,8 @@ color: light
   - Otherwise, buying and building for a consumer computer could be a nightmare
   - (It still is, because many vendors don't mention profiles yet on their marketing pages)
   - Linux distributions handle this by relying on a small extension set (usually _RV64GC_)
+    - *G*: General
+    - *C*: Compressed instructions
 
 ---
 layout: section
@@ -232,7 +234,7 @@ color: light
   - HPC may need big vectors
   - usually a tradeoff
   - usually max vector sizes are bound to ISA features
-  - Standard allows 32 to 65,536 bits per vector register (TODO: Check this!)
+  - Standard allows 32 (*Zvl32b*) to 65,536 bits per vector register
 
 ---
 layout: top-title
@@ -248,9 +250,9 @@ color: light
 
 - RISC-V approach:
 
-  1. Make effective register width configurable -> grouping
+  1. Make effective register width configurable -> **grouping**
       - Combine multiple vector registers to one effective
-  2. Tell when a configuration doesn't fit -> strip mining
+  2. Tell when a configuration doesn't fit -> **strip mining**
       - Iterate over vector chunks
 
 - Benefits:
@@ -309,12 +311,17 @@ uint8_t* plus_one(uint8_t b[8]) {
 
 ```asm
 plus_one:
-        vsetivli        zero, 8, e8, mf2, ta, ma
+        vsetivli zero, 8, e8, mf2, ta, ma
         vle8.v  v8, (a0)
         vadd.vi v8, v8, 1
         vse8.v  v8, (a0)
         ret
 ```
+
+:: default ::
+
+- `mf2` grouping: 1/2 * 128 = 64
+- required bits: 8 * 8 = 64
 
 <!-- https://godbolt.org/z/dGfxY7dv3 -->
 
@@ -343,11 +350,16 @@ uint8_t* plus_one(uint8_t b[16]) {
 ```asm
 plus_one:
         vl1r.v  v8, (a0)
-        vsetivli        zero, 16, e8, m1, ta, ma
+        vsetivli zero, 16, e8, m1, ta, ma
         vadd.vi v8, v8, 1
         vs1r.v  v8, (a0)
         ret
 ```
+
+:: default ::
+
+- `m1` grouping: 1 * 128 = 128
+- required bits: 8 * 16 = 128
 
 <!-- https://godbolt.org/z/jWGvWsbE4 -->
 
@@ -384,6 +396,11 @@ plus_one:
         ret
 ```
 
+:: default ::
+- `m2` grouping: 2 * 128 = 256
+- required bits: 8 * 32 = 256
+
+
 <!-- https://godbolt.org/z/bjr57ohsr -->
 
 <!-- https://llvm.org/devmtg/2023-10/slides/techtalks/Lau-VectorCodegenInTheRISC-VBackend.pdf -->
@@ -409,37 +426,32 @@ uint8_t* plus_one(uint8_t b[32]) {
 }
 ```
 
+- Iterations:
+  1. `t0` = 16; `a1` = 32; `a0` = `b[0]` = `b`
+  1. `t0` = 16; `a1` = 16; `a0` = `b[15]` = `b + 16 * sizeof(uint8_t)`
+
 :: right ::
 
 ```asm
 plus_one:
-        # a0 = pointer to the array
-        # a1 = 32 (number of elements in the array)
-
-        li a1, 32             # Set the number of elements explicitly to 32
-
+        # Start with 32 elements
+        li a1, 32
 loop:
-        # Set vector length based on remaining elements with m1 grouping
-        vsetvli t0, a1, e8, m1, ta, ma # Set VL (vector length) for m1 (1x grouping)
-
-        # Load vector from memory
+        # Configure to get the real VL in t0
+        vsetvli t0, a1, e8, m1, ta, ma
+        # Perform computation on chunk
         vl1r.v v8, (a0)
-
-        # Perform computation
-        vadd.vi v8, v8, 1     # Add 1 to each element in the vector
-
-        # Store result back to memory
+        vadd.vi v8, v8, 1
         vs1r.v v8, (a0)
-
         # Update pointers and counters for next chunk
-        # slli t1, t0, 1        # t1 = t0 * 2 (byte offset for m1, 16-bit elements)
-        add a0, a0, t0        # Move pointer a0 forward by VL*element_size
-        sub a1, a1, t0        # Reduce remaining elements (a1 -= VL)
-
-        bnez a1, loop         # Repeat if there are remaining elements
-
+        # Move pointer a0 forward by VL*element_size
+        add a0, a0, t0
+        # Reduce remaining elements (a1 -= VL)
+        sub a1, a1, t0
+        # Repeat if there are remaining elements
+        bnez a1, loop
 end:
-        ret                   # Return to caller
+        ret
 ```
 
 ---
