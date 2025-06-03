@@ -592,6 +592,9 @@ color: light
 - Focus on small bits: One at a time
 - Build GHC itself and libraries with `-fllvm`
 - Focus on one test / features at a time
+- `hadrian` provides:
+  - a flavour transformer `<your-flavour>+llvm`
+  - a flavour that uses LLVM `quick-cross`
 
 ---
 layout: top-title
@@ -651,5 +654,7 @@ color: light
 - My worst Heisenbug was a missing memory barrier (program cache flush, `fence.i` instruction) in the linker
   - Illegal instruction exceptions at weird places
   - Gone when the timing changed e.g. by adding trace logs
+  - Staring at Qemu traces gives hints what happened shortly before
+    - Though, it slows the execution down immensely!
 
 ---
