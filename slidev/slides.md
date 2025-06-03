@@ -525,6 +525,20 @@ color: light
 - Nix env to build GHC
   - Cross-compiler envs possible
 
+```sh
+cd $MY_GHC_SRC_DIR
+nix develop "git+https://gitlab.haskell.org/ghc/ghc.nix#riscv64-linux-cross"
+./boot && configure_ghc
+```
+
+- More convenient with `direnv` `.envrc` file
+  - `direnv` automatically provides the environment when you change into the directory
+
+```sh
+use flake git+https://gitlab.haskell.org/ghc/ghc.nix\#riscv64-linux-cross
+```
+
+
 ---
 layout: top-title
 align: c
@@ -536,6 +550,15 @@ color: light
 # Run test cross with Qemu
 
 :: content ::
+
+- Most tests can be executed with an emulator (e.g. Qemu)
+  - You don't have access to real hardware
+  - Your workstation is faster
+  - ...
+
+```sh
+CROSS_EMULATOR=qemu-riscv64 hadrian/build -j --docs=none --flavour=devel2 test
+```
 
 ---
 layout: top-title
@@ -585,8 +608,13 @@ color: light
 - Adjust tests
   - Build the smallest reproducer possible
   - Reading a lot of Assembly or Cmm can be very exhausting
+  - Add dump options: `-ddump-to-file -dppr-debug -ddump-cmm -ddump-asm`
+    - Run `hadrian` with `-k` to *k*eep those files
 - Run testsuite subsets
+  - `--only="test1 test2"`
+  - `--test-root-dirs="./testsuite/tests/..."`
 - Write small Cmm reproducers by hand
+  - E.g. write a small Haskell driver and call it via FFI
 
 ---
 layout: top-title
@@ -600,9 +628,9 @@ color: light
 
 :: content ::
 
-- Matrix group
-- Mailing list
-- Discourse
+- Matrix group (with IRC bridge): https://matrix.to/#/#GHC:matrix.org
+- Mailing list: https://mail.haskell.org/cgi-bin/mailman/listinfo/ghc-devs
+- Discourse: https://discourse.haskell.org
 
 ---
 layout: top-title
@@ -619,6 +647,7 @@ color: light
 - Bugs that disappear when you "look" at them
   - Trace logs and debuggers (GDB) change the timing of programs and execution at CPU-level
 - Trace instructions and/or CPU state with Qemu
+  - `qemu-riscv64 -d in_asm,cpu -one-insn-per-tb`
 - My worst Heisenbug was a missing memory barrier (program cache flush, `fence.i` instruction) in the linker
   - Illegal instruction exceptions at weird places
   - Gone when the timing changed e.g. by adding trace logs
