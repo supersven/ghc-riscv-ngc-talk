@@ -278,7 +278,7 @@ color: light
   - The desired VL
 - `SEW`: **S**ingle **E**lement **W**idth
   - Width of an element: `e8`, `e16`, `e32`, `e64` (bits)
-- `LMUL`: **L**enght **Mul**tiplier
+- `LMUL`: **L**ength **Mul**tiplier
   - `mf8` (LMUL=1/8), `mf4` (LMUL=1/4), `mf2` (LMUL=1/2)
   - `m1` (LMUL=1), `m2` (LMUL=2), `m4` (LMUL=4), `m8` (LMUL=8)
 
@@ -296,14 +296,10 @@ columns: is-6
 :: left ::
 
 ```c
-#include <stdlib.h>
-#include <riscv_vector.h>
-
-uint8_t* plus_one(uint8_t b[8]) {
+void plus_one(uint8_t b[8]) {
     for(int i = 0; i < 8; i++) {
         b[i]++;
     }
-    return b;
 }
 ```
 
@@ -312,9 +308,12 @@ uint8_t* plus_one(uint8_t b[8]) {
 ```asm
 plus_one:
         vsetivli zero, 8, e8, mf2, ta, ma
-        vle8.v  v8, (a0)
+        # Load v8 as 8-bit elements at address in a0
+        vle8.v v8, (a0)
+        # v8[i] = v8[i] + 1
         vadd.vi v8, v8, 1
-        vse8.v  v8, (a0)
+        # Store to address in a0
+        vse8.v v8, (a0)
         ret
 ```
 
@@ -338,21 +337,23 @@ columns: is-6
 :: left ::
 
 ```c
-uint8_t* plus_one(uint8_t b[16]) {
+void plus_one(uint8_t b[16]) {
     for(int i = 0; i < 16; i++) {
         b[i]++;
     }
-    return b;
 }
 ```
 :: right ::
 
 ```asm
 plus_one:
-        vl1r.v  v8, (a0)
         vsetivli zero, 16, e8, m1, ta, ma
+        # Load v8 as 8-bit elements at address in a0
+        vle8.v v8, (a0)
+        # v8[i] = v8[i] + 1
         vadd.vi v8, v8, 1
-        vs1r.v  v8, (a0)
+        # Store to address in a0
+        vse8.v v8, (a0)
         ret
 ```
 
@@ -377,11 +378,10 @@ columns: is-6
 :: left ::
 
 ```c
-uint8_t* plus_one(uint8_t b[32]) {
+void plus_one(uint8_t b[32]) {
     for(int i = 0; i < 32; i++) {
         b[i]++;
     }
-    return b;
 }
 ```
 
@@ -389,10 +389,15 @@ uint8_t* plus_one(uint8_t b[32]) {
 
 ```asm
 plus_one:
-        vl2r.v  v8, (a0)
-        vsetvli a1, zero, e8, m2, ta, ma
+        # 32 doesn't fit into an immediate, use a register
+        li a1, 32
+        vsetvli zero, a1, e8, m2, ta, ma
+        # Load v8 as 8-bit elements at address in a0
+        vle8.v v8, (a0)
+        # v8[i] = v8[i] + 1
         vadd.vi v8, v8, 1
-        vs2r.v  v8, (a0)
+        # Store to address in a0
+        vse8.v v8, (a0)
         ret
 ```
 
@@ -418,17 +423,16 @@ columns: is-6
 
 :: left ::
 ```c
-uint8_t* plus_one(uint8_t b[32]) {
+void plus_one(uint8_t b[32]) {
     for(int i = 0; i < 32; i++) {
         b[i]++;
     }
-    return b;
 }
 ```
 
 - Iterations:
   1. `t0` = 16; `a1` = 32; `a0` = `b[0]` = `b`
-  1. `t0` = 16; `a1` = 16; `a0` = `b[15]` = `b + 16 * sizeof(uint8_t)`
+  1. `t0` = 16; `a1` = 16; `a0` = `b[16]` = `b + 16`
 
 :: right ::
 
