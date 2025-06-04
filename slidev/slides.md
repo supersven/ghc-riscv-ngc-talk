@@ -443,9 +443,9 @@ void plus_one(uint8_t b[32]) {
 }
 ```
 
-- Iterations:
-  1. `t0` = 16; `a1` = 32; `a0` = `b[0]` = `b`
-  1. `t0` = 16; `a1` = 16; `a0` = `b[16]` = `b + 16`
+- Iterations (after `vsetvli`):
+  1. `t0` = 16; `a1` = 32; `a0` = `&b[0]` = `b`
+  1. `t0` = 16; `a1` = 16; `a0` = `&b[16]` = `b + 16`
 
 :: right ::
 
@@ -454,12 +454,12 @@ plus_one:
         # Start with 32 elements
         li a1, 32
 loop:
-        # Configure to get the real VL in t0
+        # Configure to get the real VL (16) in t0
         vsetvli t0, a1, e8, m1, ta, ma
         # Perform computation on chunk
-        vl1r.v v8, (a0)
+        vle8.v v8, (a0)
         vadd.vi v8, v8, 1
-        vs1r.v v8, (a0)
+        vse8.v v8, (a0)
         # Update pointers and counters for next chunk
         # Move pointer forward: a0 += VL
         add a0, a0, t0
@@ -470,6 +470,55 @@ loop:
 end:
         ret
 ```
+
+---
+layout: two-cols-title
+columns: is-6
+---
+
+:: title ::
+
+# Vector configuration - Strip-Mining
+
+- Increment each element of a _8bit x **17**_ vector by one (128bit register width)
+
+:: left ::
+```c
+void plus_one(uint8_t b[17]) {
+    for(int i = 0; i < 17; i++) {
+        b[i]++;
+    }
+}
+```
+
+- Iterations (after `vsetvli`):
+  1. `t0` = 16; `a1` = 17; `a0` = `&b[0]` = `b`
+  1. `t0` = 1; `a1` = 1; `a0` = `&b[16]` = `b + 16`
+
+:: right ::
+
+```asm
+plus_one:
+        # Start with 17 elements
+        li a1, 17
+loop:
+        # Configure to get the real VL in t0
+        vsetvli t0, a1, e8, m1, ta, ma
+        # Perform computation on chunk
+        vle8.v v8, (a0)
+        vadd.vi v8, v8, 1
+        vse8.v v8, (a0)
+        # Update pointers and counters for next chunk
+        # Move pointer forward: a0 += VL
+        add a0, a0, t0
+        # Reduce remaining elements (a1 -= VL)
+        sub a1, a1, t0
+        # Repeat if there are remaining elements
+        bnez a1, loop
+end:
+        ret
+```
+
 
 ---
 layout: top-title
