@@ -544,8 +544,29 @@ color: light
   - This ignores optimizations by moving instructions with the same configuration.
 
 ---
+layout: top-title
+align: c
+color: light
+---
+
+:: title ::
+
+
+# General future tasks
+
+:: content ::
+
+- Investigate ISA standard extensions beyond RV64GV
+  - Good candidates may be:
+    - **B**: Extension for Bit Manipulation
+    - **Zicond**: Extension for Integer Conditional Operations
+- Let GHC understand the target machine string
+  - The *naming scheme* we discussed in the beginning
+
+---
 layout: section
 color: sky
+align: c
 ---
 
 # NCG development: Tipps & Tricks
@@ -609,7 +630,7 @@ color: light
 
 :: title ::
 
-# Run test cross with Qemu
+# Run test emulated with Qemu
 
 :: content ::
 
@@ -639,6 +660,12 @@ color: light
 - Compares your GHC to another version
   - Cross possible
 
+<AdmonitionType type="tip">
+<tt>test-primops</tt> doesn't test all <tt>MachOp</tt>s (<tt>CmmExpr</tt>s).
+Adding (some of) them would be a great newcomers' task.
+</AdmonitionType>
+
+
 ---
 layout: top-title
 align: c
@@ -647,7 +674,7 @@ color: light
 
 :: title ::
 
-# Build Compiler with LLVM
+# Build GHC and libs with LLVM
 
 :: content ::
 
@@ -720,5 +747,19 @@ color: light
   - Gone when the timing changed e.g. by adding trace logs
   - Staring at Qemu traces gives hints what happened shortly before
     - Though, it slows the execution down immensely!
+
+---
+layout: top-title
+align: c
+color: light
+---
+
+:: title ::
+
+# AIs / LLMs
+
+:: content ::
+
+- Large Language Models are pretty good in explaining Assembly code
 
 ---
