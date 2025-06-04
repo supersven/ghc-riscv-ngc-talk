@@ -31,10 +31,11 @@ color: light
 
 - 32bit **R**educed **I**nstruction **S**et as base
   - RV32I *Base Integer Instruction Set* -> ~40 instructions, ~6 formats
+  - Basic interpreter can be built in an afternoon
 - Augmented by many extensions (sub-standards)
   - ISA like playing with Lego bricks
 - Custom extensions are anticipated by the ISA
-  - Ideal research vehicle for computer architectures
+- Ideal research vehicle for computer architectures
 
 ---
 layout: top-title
@@ -48,16 +49,16 @@ color: light
 
 :: content ::
 
-- Basic interpreter can be built in an afternoon
-- ISA is open source, implementations (SOCs) not necessarily
+- **ISA is open source**, implementations (SOCs) not necessarily
   - License: _Creative Commons Attribution 4.0 International_
   - Development on GitHub
+  - Vibrant community
   - Conceptualization in working groups at _RISC-V International_ foundation
     - Free membership for individuals
 - Everyone is free to build a RISC-V processor:
   - Several vendors
-  - Hobbiests
-    - Fun fact: Some hobbiests even tape out their designs via e.g. tinytapeout.com
+  - Hobbyists
+    - Fun fact: Some even tape out their designs via e.g. tinytapeout.com
 ---
 layout: top-title
 align: c
@@ -71,7 +72,6 @@ color: light
 :: content ::
 
 - Standard (ISA, Calling Convention, ...) pretty complete
-- Vibrant community
 - Lack of powerful hardware
   - No good cloud options -> No native cloud CI
   - Cores comparable to ARM A55 (2017)
@@ -93,9 +93,11 @@ color: light
   - New boards and chips appear frequently
   - Many manufacturers
   - Research all over the world
-    - E.g. EU grant for RISC-V HPC research
+    - EU grant for RISC-V HPC research
       - DARE (Digital Autonomy with RISC-V in Europe)
-      - Funding: 240 Million Euros
+      - Funding: ~240 Million Euros
+    - SHAKTI by IIT-Madras (India)
+    - many more
 
 ---
 layout: top-title
@@ -115,6 +117,10 @@ color: light
   - Cores may have bugs
   - Core may not adhere to the ratified standards because it pre-dates it
 
+<AdmonitionType type="warning">
+Use latest releases and be very precise about the hardware and build target!
+</AdmonitionType>
+
 ---
 layout: top-title
 align: c
@@ -129,10 +135,15 @@ color: light
 
 - Start with a base ISA: RV32I, RV64I or RV64E
 - Add the extensions in canonical order
-- The ISA is pretty new, so extensions' versions can usually be ignored
-  - If not, the format is `<extension><major>p<minor>`
+  - RV64I**M** (*Extension for Integer Multiplication and Division*)
+- Extensions can imply others
+  - F (*Extension for Single-Precision Floating-Point*) implies Zicsr (*Extension for Control and Status Register
+(CSR) Instructions*)
+- Extension can be versioned
+  - Format:  `<extension><major>p<minor>` (parts can be optional)
+  - The ISA is pretty new, so extensions' versions can usually be ignored
 - Reduce common extensions to sets (e.g. *G*eneral for _IMAFDZicsr_Zifencei_)
-- E.g. `RV64IMAFDZicsr_ZifenceiV1p0` -> `RV64GV1p0` -> `RV64GV1` -> `RV64GV`
+  - `RV64IMAFDZicsr_ZifenceiV1p0` -> `RV64GV1p0` -> `RV64GV1` -> `RV64GV`
 
 ---
 layout: top-title
@@ -182,9 +193,13 @@ color: light
   - Andreas built CI support at SuSE with patch files
   - Available from GHC 9.12
 
-- Strong advice: Reach out and team up
-  - I wouldn't have imagined that such great collaboration between former strangers would be possible!
-  - It is!
+<AdmonitionType type="tip">
+<b>Reach out and team up</b>
+  <ul>
+  <li>I wouldn't have imagined that such great collaboration between former strangers would be possible.</li>
+  <li>It is!</li>
+  </ul>
+</AdmonitionType>
 
 ---
 layout: top-title
@@ -201,8 +216,8 @@ color: light
 - LLVM Backend
 - RTS Linker
 - Native Code Generation Backend
-  - Fullfills whole testsuite
-- Tier 3
+  - Fullfills whole testsuite (minus SIMD tests)
+- Tier 3 platform
   - Due to lack of powerful hardware (CI), there are no official binary distributions, yet
   - Probably not much used yet
     - Happy to receive bug reports!
@@ -448,7 +463,7 @@ loop:
         vadd.vi v8, v8, 1
         vs1r.v v8, (a0)
         # Update pointers and counters for next chunk
-        # Move pointer a0 forward by VL*element_size
+        # Move pointer forward: a0 += VL
         add a0, a0, t0
         # Reduce remaining elements (a1 -= VL)
         sub a1, a1, t0
@@ -591,7 +606,10 @@ color: light
 
 - Focus on small bits: One at a time
 - Build GHC itself and libraries with `-fllvm`
-- Focus on one test / features at a time
+- Build tests with `-fasm`
+  - ```sh
+    EXTRA_HC_OPTS=-fasm hadrian/build test ...
+    ```
 - `hadrian` provides:
   - a flavour transformer `<your-flavour>+llvm`
   - a flavour that uses LLVM `quick-cross`
@@ -609,16 +627,15 @@ color: light
 :: content ::
 
 - Adjust tests
+  - Focus on one test / feature at a time
   - Build the smallest reproducer possible
   - Reading a lot of Assembly or Cmm can be very exhausting
   - Add dump options: `-ddump-to-file -dppr-debug -ddump-cmm -ddump-asm`
     - Run `hadrian` with `-k` to *k*eep those files
-- Run testsuite subsets
-  - `--only="test1 test2"`
-  - `--test-root-dirs="./testsuite/tests/..."`
-- Write small Cmm reproducers by hand
-  - E.g. write a small Haskell driver and call it via FFI
-
+  - Write small Cmm reproducers by hand
+    - E.g. write a small Haskell driver and call it via FFI
+- Run testsuite subsets with `hadrian`
+  - `--only="test1 test2"` or `--test-root-dirs="./testsuite/tests/..."`
 ---
 layout: top-title
 align: c
