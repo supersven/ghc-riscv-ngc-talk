@@ -306,7 +306,8 @@ columns: is-6
 
 # Vector configuration - Grouping
 
-- Task: Increment each element of a _8bit x 8_ vector by one (128bit register width)
+- Increment each element of a _8bit x 8_ vector by one (128bit register width)
+
 
 :: left ::
 
@@ -317,6 +318,10 @@ void plus_one(uint8_t b[8]) {
     }
 }
 ```
+
+- `mf2` grouping: 1/2 * 128 = 64
+- required bits: 8 * 8 = 64
+
 
 :: right ::
 
@@ -332,11 +337,6 @@ plus_one:
         ret
 ```
 
-:: default ::
-
-- `mf2` grouping: 1/2 * 128 = 64
-- required bits: 8 * 8 = 64
-
 <!-- https://godbolt.org/z/dGfxY7dv3 -->
 
 ---
@@ -347,7 +347,7 @@ columns: is-6
 :: title ::
 # Vector configuration - Grouping (2)
 
-- Task: Increment each element of a _8bit x 16_ vector by one (128bit register width)
+- Increment each element of a _8bit x 16_ vector by one (128bit register width)
 
 :: left ::
 
@@ -358,6 +358,11 @@ void plus_one(uint8_t b[16]) {
     }
 }
 ```
+
+- `m1` grouping: 1 * 128 = 128
+- required bits: 8 * 16 = 128
+
+
 :: right ::
 
 ```asm
@@ -372,11 +377,6 @@ plus_one:
         ret
 ```
 
-:: default ::
-
-- `m1` grouping: 1 * 128 = 128
-- required bits: 8 * 16 = 128
-
 <!-- https://godbolt.org/z/jWGvWsbE4 -->
 
 ---
@@ -388,7 +388,7 @@ columns: is-6
 
 # Vector configuration - Grouping (3)
 
-- Task: Increment each element of a _8bit x 32_ vector by one (128bit register width)
+- Increment each element of a _8bit x 32_ vector by one (128bit register width)
 
 :: left ::
 
@@ -399,6 +399,9 @@ void plus_one(uint8_t b[32]) {
     }
 }
 ```
+
+- `m2` grouping: 2 * 128 = 256
+- required bits: 8 * 32 = 256
 
 :: right ::
 
@@ -416,11 +419,6 @@ plus_one:
         ret
 ```
 
-:: default ::
-- `m2` grouping: 2 * 128 = 256
-- required bits: 8 * 32 = 256
-
-
 <!-- https://godbolt.org/z/bjr57ohsr -->
 
 <!-- https://llvm.org/devmtg/2023-10/slides/techtalks/Lau-VectorCodegenInTheRISC-VBackend.pdf -->
@@ -434,7 +432,7 @@ columns: is-6
 
 # Vector configuration - Strip-Mining
 
-- Task: Increment each element of a _8bit x 32_ vector by one (128bit register width)
+- Increment each element of a _8bit x 32_ vector by one (128bit register width)
 
 :: left ::
 ```c
