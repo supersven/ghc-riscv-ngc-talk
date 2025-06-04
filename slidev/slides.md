@@ -96,7 +96,7 @@ color: light
     - EU grant for RISC-V HPC research
       - DARE (Digital Autonomy with RISC-V in Europe)
       - Funding: ~240 Million Euros
-    - SHAKTI by IIT-Madras (India)
+    - SHAKTI CPU by IIT-Madras (India)
     - many more
 
 ---
@@ -191,7 +191,8 @@ color: light
   - Moritz switched to mentor role
   - Sven continued to hack
   - Andreas built CI support at SuSE with patch files
-  - Available from GHC 9.12
+    - https://build.opensuse.org/package/show/openSUSE:Factory/ghc
+  - Available from **GHC 9.12**
 
 <AdmonitionType type="tip">
 <b>Reach out and team up</b>
@@ -219,9 +220,10 @@ color: light
   - Fullfills whole testsuite (minus SIMD tests)
 - Tier 3 platform
   - Due to lack of powerful hardware (CI), there are no official binary distributions, yet
-  - Probably not much used yet
+  - Probably not much in use, yet
     - Happy to receive bug reports!
 - SIMD (Vector) in NCG support WIP
+  - Maybe, first edition will be done during ZuriHac
 
 ---
 layout: section
@@ -537,6 +539,29 @@ color: light
   - This would require the register allocator to be aware of grouped registers
 - Would it be better to apply strip-mining?
   - Would that work for all `MachOp`s?
+
+<AdmonitionType type="info">
+The first edition of SIMD / vectors support in NGC will:
+<ul>
+    <li>have a GHC parameter for a minimum VLEN (vector register width)</li>
+    <li>expect the machine to have at least that VLEN</li>
+    <li>panic when a bigger vector is requested</li>
+</ul>
+</AdmonitionType>
+
+---
+layout: top-title
+align: c
+color: light
+---
+
+:: title ::
+
+
+# Vectors: Questions to investigate
+
+:: content ::
+
 - How to optimize for minimal vector re-configuration?
   - My naive approach is to:
     - fold over the final instructions in the Assembly emitting stage (`Ppr.hs`)
@@ -562,6 +587,8 @@ color: light
     - **Zicond**: Extension for Integer Conditional Operations
 - Let GHC understand the target machine string
   - The *naming scheme* we discussed in the beginning
+- Check if applying GADTs couldn't make NCGs saver
+  - The current pattern is often "(pattern) match or panic"
 
 ---
 layout: section
@@ -630,7 +657,7 @@ color: light
 
 :: title ::
 
-# Run test emulated with Qemu
+# Run tests emulated with Qemu
 
 :: content ::
 
