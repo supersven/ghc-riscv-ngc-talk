@@ -504,7 +504,7 @@ color: sky
 # NCG development: Tipps & Tricks
 
 ---
-layout: two-cols-title
+layout: top-title-two-cols
 columns: is-4
 color: light
 ---
