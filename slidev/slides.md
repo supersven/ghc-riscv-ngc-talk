@@ -149,7 +149,7 @@ color: light
 
 :: title ::
 
-# ISA naming scheme
+# ISA Naming Scheme
 
 :: content ::
 - Clang emits for `-march=rv64g` -> `rv64i2p1_m2p0_a2p1_f2p2_d2p2_zicsr2p0_zifencei2p0_zmmul1p0_zaamo1p0_zalrsc1p0` as target in Assembly
