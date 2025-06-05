@@ -82,6 +82,7 @@ color: light
 <!--
 - There are cloud options, but those are in the range of mobile phones.
 - lichee Pi 4a is my dev board
+- 3 days to build GHC and run the whole testsuite
 -->
 
 ---
@@ -151,18 +152,14 @@ color: light
 # ISA naming scheme
 
 :: content ::
-
-- Start with a base ISA: RV32I, RV64I or RV64E
-- Add the extensions in canonical order
-  - RV64I**M** (*Extension for Integer Multiplication and Division*)
-- Extensions can imply others
-  - F (*Extension for Single-Precision Floating-Point*) implies Zicsr (*Extension for Control and Status Register
-(CSR) Instructions*)
-- Extension can be versioned
-  - Format:  `<extension><major>p<minor>` (parts can be optional)
-  - The ISA is pretty new, so extensions' versions can usually be ignored
-- Reduce common extensions to sets (e.g. *G*eneral for _IMAFDZicsr_Zifencei_)
-  - `RV64IMAFDZicsr_ZifenceiV1p0` -> `RV64GV1p0` -> `RV64GV1` -> `RV64GV`
+- Clang emits for `-march=rv64g` -> `rv64i2p1_m2p0_a2p1_f2p2_d2p2_zicsr2p0_zifencei2p0_zmmul1p0_zaamo1p0_zalrsc1p0` as target in Assembly
+  - Base Integer ISA: `rv64i` (64bit)
+  - Extension versions: `<extension-name><major>p<minor>`
+  - Expansion:
+    - `G` -> `IMAFDZicsr_Zifencei`
+    - `M` -> `MZmmul`
+    - `F` -> `FZicsr`
+    - `A` -> `AZaamoZalrsc`
 
 ---
 layout: top-title
@@ -204,14 +201,13 @@ color: light
 
 :: content ::
 
-- LLVM backend by Andreas Schwab (October 2020; GHC 9.2)
-- Moritz Angerman and Sven Tennie accidentally started NCG at the same time
-
+- LLVM backend by Andreas Schwab (merged 2020; GHC 9.2)
+- 2023: Moritz Angerman and Sven Tennie accidentally started implementing NCG at the same time
   - Moritz switched to mentor role
   - Sven continued to hack
   - Andreas built CI support at SuSE with patch files
     - https://build.opensuse.org/package/show/openSUSE:Factory/ghc
-  - Available from **GHC 9.12**
+  - Available from **GHC 9.12** (August 2024)
 
 <AdmonitionType type="tip">
 <b>Reach out and team up</b>
@@ -270,7 +266,7 @@ color: light
   - HPC may need big vectors
   - usually a tradeoff
   - usually max vector sizes are bound to ISA features
-  - Standard allows 32 (*Zvl32b*) to 65,536 bits per vector register
+  - RISC-V ISA allows 32 (*Zvl32b*) to 65,536 bits per vector register
 
 ---
 layout: top-title
@@ -499,7 +495,7 @@ columns: is-6
 
 :: title ::
 
-# Vector configuration - Strip-Mining
+# Vector configuration - Strip-Mining (2)
 
 - Increment each element of a _8bit x **17**_ vector by one (128bit register width)
 
@@ -556,11 +552,11 @@ color: light
 
 - How can we allocate register groups? (Virtual registers that cover multiple consecutive registers)
   - This would require the register allocator to be aware of grouped registers
-- Would it be better to apply strip-mining?
+- Would it be better to apply strip-mining (if the VLEN is too small)?
   - Would that work for all `MachOp`s?
 
 <AdmonitionType type="info">
-The first edition of SIMD / vectors support in NGC will:
+The first edition of SIMD / vectors support in NCG will:
 <ul>
     <li>have a GHC parameter for a minimum VLEN (vector register width)</li>
     <li>expect the machine to have at least that VLEN</li>
@@ -606,6 +602,7 @@ color: light
     - **Zicond**: Extension for Integer Conditional Operations
 - Let GHC understand the target machine string
   - The *naming scheme* we discussed in the beginning
+  - Make additional extensions optional
 - Check if applying GADTs couldn't make NCGs saver
   - The current pattern is often "(pattern) match or panic"
 
@@ -688,6 +685,8 @@ color: light
 ```sh
 CROSS_EMULATOR=qemu-riscv64 hadrian/build -j --docs=none --flavour=devel2 test
 ```
+
+- `-fexternal-interpreter` and `-pgmi` can be used to run tests with Template Haskell
 
 ---
 layout: top-title
