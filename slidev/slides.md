@@ -73,9 +73,16 @@ color: light
 
 - Standard (ISA, Calling Convention, ...) pretty complete
 - Lack of powerful hardware
-  - No good cloud options -> No native cloud CI
-  - Cores comparable to ARM A55 (2017)
+  - No high performace cloud options -> No native cloud CI (for us)
+    - Most projects use a mixture of Docker & Qemu -> Too slow for us
+  - Cores comparable to ARM A55 (2017) or A72 (2016)
+    - Sipeed market their *LicheePi 4A* as slightly slower than a *Raspberry Pi 4B*
     - Your smartphone might be more powerful than RISC-V SBCs
+
+<!--
+- There are cloud options, but those are in the range of mobile phones.
+- lichee Pi 4a is my dev board
+-->
 
 ---
 layout: top-title
@@ -94,7 +101,7 @@ color: light
   - Many manufacturers
   - Research all over the world
     - EU grant for RISC-V HPC research
-      - DARE (Digital Autonomy with RISC-V in Europe)
+      - DARE (*Digital Autonomy with RISC-V in Europe*)
       - Funding: ~240 Million Euros
     - SHAKTI CPU by IIT-Madras (India)
     - many more
