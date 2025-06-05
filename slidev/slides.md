@@ -856,4 +856,7 @@ color: light
 
 - Large Language Models are pretty good in explaining Assembly code
 
+- Generating is not safe, though.
+  - Copilot (ChatGTP) invented pointer arithmetics in Cmm
+  - proposed invalid RISC-V C intrinsics
 ---
