@@ -684,13 +684,20 @@ color: light
 - Most tests can be executed with an emulator (e.g. Qemu)
   - You don't have access to real hardware
   - Your workstation is faster
-  - ...
 
 ```sh
 CROSS_EMULATOR=qemu-riscv64 hadrian/build -j --docs=none --flavour=devel2 test
 ```
 
-- `-fexternal-interpreter` and `-pgmi` can be used to run tests with Template Haskell
+- `-fexternal-interpreter` and `-pgmi=<host-ghc-iserv-binary>` can be used to run tests with Template Haskell
+  - `ghc-iserv` is not part of cross compilers
+  - Choose a GHC host version close to your cross version
+
+```sh
+CROSS_EMULATOR=qemu-riscv64 EXTRA_HC_OPTS="-fexternal-interpreter -pgmi=$ISERV_BINARY_PATH" \
+  hadrian/build -j --docs=none --flavour=devel2 test
+```
+
 
 ---
 layout: top-title
