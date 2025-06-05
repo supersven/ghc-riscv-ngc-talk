@@ -701,9 +701,10 @@ color: light
 :: content ::
 
 - https://gitlab.haskell.org/ghc/test-primops
-- QuickCheck tests for PrimOps
-- Compares your GHC to another version
+- QuickCheck tests for GHC's C-- pipeline and code generators
+- Generates Cmm expressions and compares your GHC's to an interpreter's results
   - Cross possible
+  - Great to verify your NCG changes/implementation
 
 <AdmonitionType type="tip">
 <tt>test-primops</tt> doesn't test all <tt>MachOp</tt>s (<tt>CmmExpr</tt>s).
