@@ -798,7 +798,7 @@ color: light
   - Focus on one test / feature at a time
   - Build the smallest reproducer possible
     - Often tests can be simplified by deleting some code
-  - Add dump options to test config:
+  - Add dump options to test config or `$EXTRA_HC_OPTS`:
     - `-ddump-to-file -dppr-debug -ddump-cmm -ddump-asm`
     - Run `hadrian` with `-k` to *k*eep those files
 - Run testsuite subsets with `hadrian`
