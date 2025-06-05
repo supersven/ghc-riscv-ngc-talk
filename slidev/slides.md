@@ -218,28 +218,30 @@ color: light
 </AdmonitionType>
 
 ---
-layout: top-title
-align: c
+layout: top-title-two-cols
 color: light
 ---
 
 :: title ::
 
-# GHC RISC-V status
+# GHC RISC-V Status
 
-:: content ::
+:: left ::
 
 - LLVM Backend
 - RTS Linker
 - Native Code Generation Backend
   - Fullfills whole testsuite (minus SIMD tests)
-- Tier 3 platform
-  - Due to lack of powerful hardware (CI), there are no official binary distributions, yet
-  - Probably not much in use, yet
-    - Happy to receive bug reports!
+  - Targets *RV64G*(*V*) or implicitly *RV64GC*(*V*) by toolchain config
 - SIMD (Vector) in NCG support WIP
   - Maybe, first edition will be done during ZuriHac
 
+:: right ::
+
+- Tier 3 platform
+  - Due to lack of powerful hardware (CI), there are no official binary distributions, yet
+  - Probably not much in use, yet
+    - **Happy to receive bug reports!**
 ---
 layout: section
 color: sky
