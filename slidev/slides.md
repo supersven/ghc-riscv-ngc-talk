@@ -712,7 +712,7 @@ color: light
 :: content ::
 
 - https://gitlab.haskell.org/ghc/test-primops
-- QuickCheck tests for GHC's C-- pipeline and code generators
+- QuickCheck tests for GHC's Cmm pipeline and code generators
 - Generates Cmm expressions and compares your GHC's to an interpreter's results
   - Cross possible
   - Great to verify your NCG changes/implementation
