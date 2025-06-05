@@ -859,4 +859,14 @@ color: light
 - Generating is not safe, though.
   - Copilot (ChatGTP) invented pointer arithmetics in Cmm
   - proposed invalid RISC-V C intrinsics
+
 ---
+layout: section
+color: sky
+align: c
+---
+
+# EOF
+
+- Let's discuss the mentioned questions and tasks at Zurihac!
+- Looking forwards to see you in the GHC room or at the lake!
