@@ -724,7 +724,7 @@ color: light
 
 :: content ::
 
-- Focus on small bits: One at a time
+- Focus on small bits: Don't attempt to write a whole NCG in one go
 - Build GHC itself and libraries with `-fllvm`
 - Build tests with `-fasm`
   - ```sh
