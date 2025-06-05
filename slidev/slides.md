@@ -573,15 +573,17 @@ color: light
 :: title ::
 
 
-# Vectors: Questions to investigate
+# Vectors: Questions to investigate (2)
 
 :: content ::
 
 - How to optimize for minimal vector re-configuration?
   - My naive approach is to:
-    - fold over the final instructions in the Assembly emitting stage (`Ppr.hs`)
-    - drop duplicated configuration statements in a block
-  - This ignores optimizations by moving instructions with the same configuration.
+    - fold over the final instructions in each block in the Assembly emitting stage (`Ppr.hs`)
+      - keep the current vector configuration in the accumulator (state)
+      - drop configuration statements that would set (duplicate) the current state
+      - drop the state at jumps
+  - This ignores optimizations by moving (re-ordering) instructions with the same configuration requirements.
 
 ---
 layout: top-title
