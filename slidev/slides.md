@@ -784,20 +784,20 @@ color: light
 
 :: title ::
 
-# Reduce problems
+# Reduce problems (2)
 
 :: content ::
 
 - Adjust tests
   - Focus on one test / feature at a time
   - Build the smallest reproducer possible
-  - Reading a lot of Assembly or Cmm can be very exhausting
-  - Add dump options: `-ddump-to-file -dppr-debug -ddump-cmm -ddump-asm`
+    - Often tests can be simplified by deleting some code
+  - Add dump options to test config:
+    - `-ddump-to-file -dppr-debug -ddump-cmm -ddump-asm`
     - Run `hadrian` with `-k` to *k*eep those files
-  - Write small Cmm reproducers by hand
-    - E.g. write a small Haskell driver and call it via FFI
 - Run testsuite subsets with `hadrian`
   - `--only="test1 test2"` or `--test-root-dirs="./testsuite/tests/..."`
+
 ---
 layout: top-title
 align: c
