@@ -827,7 +827,7 @@ color: light
   - Trace logs and debuggers (GDB) change the timing of programs and execution at CPU-level
 - Trace instructions and/or CPU state with Qemu
   - `qemu-riscv64 -d in_asm,cpu -one-insn-per-tb`
-- My worst Heisenbug was a missing memory barrier (program cache flush, `fence.i` instruction) in the linker
+- My worst Heisenbug was a missing memory barrier (after program cache flush, `fence.i` instruction) in the linker
   - Illegal instruction exceptions at weird places
   - Gone when the timing changed e.g. by adding trace logs
   - Staring at Qemu traces gives hints what happened shortly before
