@@ -132,7 +132,7 @@ Use latest releases and be very precise about the hardware and build target!
 
 ![Carta Marina](./imgs/Carta_Marina_detail.jpeg)
 
-<small><small>Detail of Olaus Magnus's Carta Marina (1539), Wikimedia Commons</small></small>
+<small><small>Detail of Olaus Magnus' Carta Marina (1539), Wikimedia Commons</small></small>
 
 <!--
 Examples:
