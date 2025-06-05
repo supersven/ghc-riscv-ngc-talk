@@ -107,8 +107,7 @@ color: light
     - many more
 
 ---
-layout: top-title
-align: c
+layout: top-title-two-cols
 color: light
 ---
 
@@ -116,9 +115,9 @@ color: light
 
 # RISC-V Status
 
-:: content ::
+:: left ::
 
-- There are still some dragons ...
+- Here be dragons ...
   - Tools don't support the full instruction set
   - Tools sometimes still have bugs ...
   - Cores may have bugs
@@ -127,6 +126,19 @@ color: light
 <AdmonitionType type="warning">
 Use latest releases and be very precise about the hardware and build target!
 </AdmonitionType>
+
+:: right ::
+
+![Carta Marina](./imgs/Carta_Marina_detail.jpeg)
+
+<small><small>Detail of Olaus Magnus's Carta Marina (1539), Wikimedia Commons</small></small>
+
+<!--
+Examples:
+- GDB and dissasemblers lacked support for newer extension
+- Qemu Vector support was incomplete / had bugs
+- My dev board (LicheePi 4a) supports only Vectors in version 0.7
+-->
 
 ---
 layout: top-title
