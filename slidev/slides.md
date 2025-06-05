@@ -735,6 +735,48 @@ color: light
   - a flavour that uses LLVM `quick-cross`
 
 ---
+layout: top-title-two-cols
+color: light
+---
+
+:: title ::
+
+# Reduce problems
+
+:: left ::
+```haskell
+foreign import ccall "fun8"
+  fun8 ::
+    Int8# -> -- a0
+    Word8# -> -- a1
+    Int8# -> -- a2
+    Int8# -> -- a3
+    Int8# -> -- a4
+    Int8# -> -- a5
+    Int8# -> -- a6
+    Int8# -> -- a7
+    Word8# -> -- s0
+    Int8# -> -- s1
+    Int64# -- result
+```
+
+:: right ::
+
+```c
+int64_t fun8(int8_t a0, uint8_t a1, int8_t a2, int8_t a3, int8_t a4, int8_t a5,
+             int8_t a6, int8_t a7, uint8_t s0, int8_t s1) {
+  return a0 + a1 + a2 + a3 + a4 + a5 + a6 + a7 + s0 + s1;
+}
+
+```
+(<small><tt>CCallConv</tt> test</small>)
+
+- Reading a lot of Assembly or Cmm can be very exhausting
+- Write small Cmm reproducers by hand
+  - E.g. write a small Haskell driver and call it via FFI
+  - Examples of this are in the testsuite
+
+---
 layout: top-title
 align: c
 color: light
