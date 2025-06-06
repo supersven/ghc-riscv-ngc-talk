@@ -210,11 +210,8 @@ color: light
   - Available from **GHC 9.12** (August 2024)
 
 <AdmonitionType type="tip">
-<b>Reach out and team up</b>
-  <ul>
-  <li>I wouldn't have imagined that such great collaboration between former strangers would be possible.</li>
-  <li>It is!</li>
-  </ul>
+<b>Reach out and team up:</b>
+I wouldn't have imagined that such great collaboration between former strangers would be possible. It is!
 </AdmonitionType>
 
 ---
@@ -869,4 +866,4 @@ align: c
 # EOF
 
 - Let's discuss the mentioned questions and tasks at Zurihac!
-- Looking forwards to see you in the GHC room or at the lake!
+- Looking forward to meet you in the GHC room or at the lake!
